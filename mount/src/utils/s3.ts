@@ -4,13 +4,12 @@ import fs from 'fs'
 
   const s3Client = new S3({
     forcePathStyle: false,
-    endpoint:"https://campus-connect-bucket.nyc3.digitaloceanspaces.com",
+    endpoint:"https://nyc3.digitaloceanspaces.com",
     region:"us-east-1",
     credentials:{
       accessKeyId: process.env.SPACES_KEY,
       secretAccessKey: process.env.SPACES_SECRET
     },
-    
   })
 
   const uploadFile = (file, bucketName: string, class_name: string, class_year: string) => {
@@ -28,16 +27,15 @@ import fs from 'fs'
     const bucketParams = {
         Bucket: bucketName,
         Body: fileStream,
-        Key: `${class_name}/${class_year}/${file.filename}`,
+        Key: `${class_name}/${class_year}/${file.originalname}`,
         ACL: 'public-read' // make file that is uploaded public-read
     }
-    return s3Client.putObject(bucketParams)
+  return s3Client.putObject(bucketParams)
 }
 
 const getFiles = async (bucketName: string, class_name: string, class_year: string) => {
   try {
-    const data = await s3Client.send(new ListObjectsCommand({Bucket: bucketName}));
-    return data
+    return await s3Client.send(new ListObjectsCommand({Bucket: bucketName}))
   } catch (err) {
     console.log("Error", err);
   }

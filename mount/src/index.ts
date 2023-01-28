@@ -22,21 +22,20 @@ app.options('*', cors())
 
 app.get('/', (req, res) => {
   return res.status(200).json({
-    message: 'Ping Pong'
+    message: 'Ping Pong Ching Chong'
   })
 })
 
 // get all files
-app.get('/file', (req, res) => {
+app.get('/files', async (req, res) => {
   const {
     class_name,
     class_year
   } = req.body
-  const files = getFiles("campus_connect", class_name, class_year);
-  console.log(files)
+  const files = await getFiles("campusconnect", class_name, class_year);
   return res.status(200).json({
     message:"File success",
-    data: files
+    data: files.Contents
   });
 })
 
@@ -57,15 +56,13 @@ app.post('/files/upload', upload.array('files', 10), async (req: MulterRequest, 
   // const uploadedFile = await uploadFile('', 'campus_connect', '1234')
   const {
     class_name,
-    class_year
+    class_year,
   } = req.body
 
   const files = req.files
-
   for (let i = 0; i < files.length; i++){
-    await uploadFile(files[i], 'campus_connect', class_name,  class_year)
+    await uploadFile(files[i], 'campusconnect', class_name,  class_year)
   }
-
   // await s3Client.putObject(bucketParams)
   res.status(200).json({
     message: 'file uploaded'
